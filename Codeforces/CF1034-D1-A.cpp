@@ -23,8 +23,10 @@ int a[N];
 int tot;
 int prime[N];
 bool del[N];
-int cnt[N];
+int cnt[N][25];
 int ans=inf;
+int cc;
+int sum;
 void get(int x) {
 	REP(i,2,x) {
 		if (!del[i]) prime[++tot]=i;
@@ -48,9 +50,15 @@ int main() {
     m=max(m,10);
     get(m);
 	FOR(i,tot) FOR(j,n) {
-		if (a[j]%prime[i]==0) cnt[prime[i]]++;
+		cc=0;
 		while (a[j]%prime[i]==0) {
 			a[j]/=prime[i];
+			cc++;
+		}
+		if (cc) {
+			cnt[prime[i]][cc]++;
+			cnt[prime[i]][0]++;
+			// cnt[..][0]¸ºÔð´æsum cnt[..][i] 
 		}
 	}
 	//FOR(i,n) cout<<a[i]<<endl;
@@ -64,9 +72,21 @@ int main() {
 		}
 		pos=i;
 	}
-	FOR(i,tot) if (cnt[prime[i]]&&cnt[prime[i]]!=n) {
-		ans=min(ans,n-cnt[prime[i]]);
-		//cout<<n-cnt[prime[i]]<<endl;
+	FOR(i,tot) if (cnt[prime[i]][0]&&cnt[prime[i]][0]!=n) {
+		ans=min(ans,n-cnt[prime[i]][0]);
+		//cout<<n-cnt[prime[i]][0]<<endl;
+	}
+	FOR(i,tot) {
+		sum=cnt[prime[i]][0];
+		if (sum!=n) continue;
+		FOR(j,24) {
+			if (cnt[prime[i]][j]) {
+				if (sum!=cnt[prime[i]][j]) {
+					ans=min(ans,cnt[prime[i]][j]);
+				}
+				break;
+			}
+		}
 	}
 	if (ans>=n) cout<<-1<<endl;
 	else cout<<ans<<endl;
