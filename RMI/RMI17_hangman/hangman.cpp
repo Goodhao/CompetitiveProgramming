@@ -16,14 +16,36 @@ const int inf=0x3f3f3f3f;
 const ll linf=1e18;
 const int N=30000+10;
 const double eps=1e-5;
-const int mo=1e9+7;
+const ll mo=36028797018963913;
 
+int T;
 int n,k;
-string s[N];
-int c[N];
-int ha[N][175];
-int ans[N];
-map<int,int> m;
+ll c[N];
+ll ha[N];
+bool ans[N];
+ll res[N];
+unordered_map<ll,ll> m;
+long long readInt() {
+    bool minus1 = false;
+    long long result = 0;
+    char ch;
+    ch = getchar();
+    while (true) {
+        if (ch == '-') break;
+        if (ch >= '0' && ch <= '9') break;
+        ch = getchar();
+    }
+    if (ch == '-') minus1 = true; else result = ch-'0';
+    while (true) {
+        ch = getchar();
+        if (ch < '0' || ch > '9') break;
+        result = result*10 + (ch - '0');
+    }
+    if (minus1)
+        return -result;
+    else
+        return result;
+}
 int main() {
  
     std::ios::sync_with_stdio(false);
@@ -32,62 +54,54 @@ int main() {
 
     //freopen("in.txt","r",stdin);
     //freopen("out.txt","w",stdout);
-    scanf("%d %d",&n,&k);
-    FOR(i,n) {
-    	cin>>s[i];
-	}
-	int cnt;
-	if (n<=k) {
-		FOR(i,n) FOR(j,n) if (i!=j) {
-			cnt=0;
-			for (int p=0;p<k;p++) {
-				if (s[i][p]!=s[j][p]) {
-					++cnt;
+   	T=readInt();
+	c[0]=1;
+	FOR(i,30000) c[i]=c[i-1]*29%mo;
+    while (T--) {
+	    n=readInt();
+	    k=readInt();
+	    FOR(i,n) ans[i]=0;
+	    char s[n+1][k];
+	    FOR(i,n) {
+	    	for (int j = 0; j < k; j++) {
+				s[i][j] = getchar();
+			}
+			getchar();
+		}
+		
+		if (n<=k) {
+			int cnt=0;
+			FOR(i,n) FOR(j,n) if (i!=j) {
+				cnt=0;
+				for (int p=0;p<k;p++) {
+					if (s[i][p]!=s[j][p]) {
+						++cnt;
+					}
 				}
+				if (cnt<=2) ans[i]=1;
 			}
-			if (cnt<=2) ans[i]=1;
-		}
-	} else {
-		c[0]=1;
-		FOR(i,k) c[i]=c[i-1]*26,c[i]%=mo;
-		FOR(i,n) for (int j=0;j<k;j++) {
-			if (j==0) ha[i][j]=(ll)c[j]*(s[i][j]-'a')%mo;
-			else ha[i][j]=ha[i][j-1]+(ll)c[j]*(s[i][j]-'a')%mo,ha[i][j]%=mo;
-		}
-		int res;
-		REP(i,0,k-1) REP(j,0,k-1) {
-			if (i!=j) {
-				FOR(x,n) {
-					res=(ll)ha[x][k-1]-c[i]*(s[x][i]-'a')-c[j]*(s[x][j]-'a');
-					res%=mo;
-					res=(res+mo)%mo;
-					m[res]++;
-				} 
+		} else {
+			memset(ha,0,sizeof ha);
+			FOR(i,n) for (int j=0;j<k;j++) {
+				ha[i]=(ha[i]+c[j]*(s[i][j]-'a'+1)%mo)%mo;
 			}
-		}
-		REP(i,0,k-1) REP(j,0,k-1) {
-			if (i!=j) {
+			REP(i,0,k-1) REP(j,i+1,k-1) {
+				m.clear();
 				FOR(x,n) {
-					res=(ll)ha[x][k-1]-c[i]*(s[x][i]-'a')-c[j]*(s[x][j]-'a');
-					res%=mo;
-					res=(res+mo)%mo;
-					if (m.count(res)&&m[res]>=2) {
+					res[x]=ha[x];
+					res[x]=(res[x]-c[i]*(s[x][i]-'a'+1)%mo+mo)%mo;
+					res[x]=(res[x]-c[j]*(s[x][j]-'a'+1)%mo+mo)%mo;
+					m[res[x]]++;
+				}
+				FOR(x,n) {
+					if (m[res[x]]>=2) {
 						ans[x]=1;
 					}
-				} 
+				}
 			}
 		}
-		REP(i,0,k-1) REP(j,0,k-1) {
-			if (i!=j) {
-				FOR(x,n) {
-					res=(ll)ha[x][k-1]-c[i]*(s[x][i]-'a')-c[j]*(s[x][j]-'a');
-					res%=mo;
-					res=(res+mo)%mo;
-					m[res]--;
-				} 
-			}
-		}
+		FOR(i,n) printf("%d",ans[i]);
+		printf("\n");
 	}
-	FOR(i,n) cout<<ans[i];
 	return 0;
 }

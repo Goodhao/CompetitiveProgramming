@@ -50,6 +50,7 @@ void change(int k,int l,int r,int x,int v) {
 	seg[k]=max(seg[k<<1],seg[k<<1|1]); 
 }
 int query(int k,int L,int R,int l,int r) {
+	if (l>r) return 0;
 	if (l==L&&r==R) {
 		return seg[k];
 	}
@@ -110,7 +111,7 @@ int main() {
 			p++;
 		}
 		id=b[i].id;
-		res=query(1,1,n,1,id);
+		res=query(1,1,n,1,id-1);
 		ans=max(ans,res+g[id]);
 	}
 	p=n;
@@ -121,7 +122,7 @@ int main() {
 			p--;
 		}
 		id=b[i].id;
-		res=query(1,1,n,id,n);
+		res=query(1,1,n,id+1,n);
 		ans=max(ans,res+f[id]);
 	}
 	cout<<ans<<endl;
