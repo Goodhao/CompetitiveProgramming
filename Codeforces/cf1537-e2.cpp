@@ -49,17 +49,18 @@ int main() {
 			t=s.substr(0,i+1);
 			break;
 		} else if (s[i+1]==s[0]) {
-			if (len[n-1]==n-1-i) {
-				t=s.substr(0,i+1);
-				break;
-			} else {
-				for (int j=i+1;j<n;j++) {
-					if (s[j]>s[j-i-1]) {
-					} else if (s[j]<s[j-i-1]) {
-						
-					}
+			bool ok=0;
+			for (int j=i+1;j<n;j++) {
+				if (s[j]<s[j-i-1]) {
+					i=j-1;
+					break;
+				} else if (j==n-1||s[j]>s[j-i-1]) {
+					ok=1;
+					t=s.substr(0,i+1);
+					break;
 				}
 			}
+			if (ok) break;
 		}
 	}
 	while ((int)t.size()<k) t=t+t;
